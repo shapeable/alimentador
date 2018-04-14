@@ -1,10 +1,9 @@
-#include <Wiegand.h>
-#include <RelayShield.h>
-#include <DS18B20.h>
-#include <blynk.h>
-#include <pid.h>
 #include <OneWire.h>
-
+#include <pid.h>
+#include <blynk.h>
+#include <DS18B20.h>
+#include <RelayShield.h>
+#include <Wiegand.h>
 
 SYSTEM_THREAD(ENABLED);
 
@@ -45,7 +44,6 @@ PID tempcontrol(&Input, &Output, &Setpoint,1,0,0, PID::DIRECT);
  */
 int ControlWindowSize = 5000; //in ms
 unsigned long windowStartTime;
-unsigned long previousMillis = 0;
 
 /*================================Vacuum Switch============================
 * Set vacuumSwitch to D2
@@ -89,7 +87,8 @@ void setup() {
     //Initialize Relay library by setting PINMODE on all 4 relays
     myRelays.begin();
     
-    
+    //initialize the variables for PID
+    windowStartTime = millis();
     // Calibratable => Target Water Temperature 
     Setpoint = 38;
     
@@ -113,9 +112,6 @@ void setup() {
 }
 
 void loop() {
-    
-    //initialize the variables for PID
-    windowStartTime = milliseconds;
     
     Blynk.run();
     
@@ -154,8 +150,6 @@ void loop() {
 		Particle.publish("cardID", cardID, 60, PRIVATE);
         
         if (digitalRead(vacuumSwitch) && cardID =="5980741") {
-            
-            if (milliseconds - pump_duration * 1000 < )
             pumpOn();
             delay(pump_duration * 1000); // multiply by 1000 to get miliseconds
             Particle.publish("ternero_comio", cardID, 60, PRIVATE);
@@ -257,3 +251,4 @@ void toggleSwitch() {
     
     }
  }
+
